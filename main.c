@@ -38,16 +38,12 @@
 #include <unistd.h>
 #include <errno.h>
 
-#define LISTEN_PORT 8123
-static const char reply[] = "HTTP/1.1 200 OK\r\n" \
+#define LISTEN_PORT 8080
+//static const char reply[] = "HTTP/1.1 200 OK\r\n" 
+char reply_static[] = "HTTP/1.1 200 OK\r\n" \
 			    "Content-type: text/html\r\n" \
 			    "Connection: close\r\n" \
-			    "\r\n" \
-			    "<!DOCTYPE HTML PUBLIC \"-//IETF//DTD HTML 2.0//EN\">" \
-			    "<html>" \
-			    "<head><title>It works!</title></head>" \
-			    "<body><h1>It works!</h1><p>This is only a test.</p></body>" \
-			    "</html>\n";
+			    "\r\n";
 
 #define BUFLEN 2048
 static char recvbuf[BUFLEN];
@@ -94,14 +90,21 @@ int main(int argc __attribute__((unused)),
 		}
 
 		/* Receive some bytes (ignore errors) */
-		read(client, recvbuf, BUFLEN);
+		char reply[2048];
+		int bytesread = read(client, recvbuf, BUFLEN);
+		int ptr = strlen(reply_static);
+		memcpy(reply, reply_static, ptr);
+		memcpy(reply+ptr, recvbuf, bytesread);
+		reply[ptr+bytesread]='\0';
 
 		/* Send reply */
-		n = write(client, reply, sizeof(reply) - 1);
+		n = write(client, reply, ptr+bytesread);
 		if (n < 0)
 			fprintf(stderr, "Failed to send a reply\n");
+#if 0
 		else
 			printf("Sent a reply\n");
+#endif
 
 		/* Close connection */
 		close(client);
