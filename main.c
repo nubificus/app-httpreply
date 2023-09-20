@@ -41,7 +41,7 @@
 #define LISTEN_PORT 8080
 //static const char reply[] = "HTTP/1.1 200 OK\r\n" 
 char reply_static[] = "HTTP/1.1 200 OK\r\n" \
-			    "Content-type: text/html\r\n" \
+			    "Content-type: text/plain\r\n" \
 			    "Connection: close\r\n" \
 			    "\r\n";
 
