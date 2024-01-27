@@ -1,0 +1,12 @@
+diff --git a/drivers/ukintctlr/gic/gic-v2.c b/drivers/ukintctlr/gic/gic-v2.c
+index e6278e76..b0e956fe 100644
+--- a/drivers/ukintctlr/gic/gic-v2.c
++++ b/drivers/ukintctlr/gic/gic-v2.c
+@@ -78,6 +78,7 @@ struct _gic_dev gicv2_drv = {
+ 
+ static const char * const gic_device_list[] __maybe_unused = {
+ 	"arm,cortex-a15-gic",
++	"arm,gic-400",
+ 	NULL
+ };
+ 
