@@ -72,6 +72,8 @@ const char *imageFirecrackerURL = "https://s3.nbfc.io/hypervisor-logos/firecrack
 const char *imageQEMUURL = "https://s3.nbfc.io/hypervisor-logos/qemu.png";
 const char *imageCLHURL = "https://s3.nbfc.io/hypervisor-logos/clh.png";
 const char *imageRSURL = "https://s3.nbfc.io/hypervisor-logos/dragonball.png";
+const char *imageURUNCFCURL = "https://s3.nbfc.io/hypervisor-logos/uruncfc.png";
+const char *imageURUNCQEMUURL = "https://s3.nbfc.io/hypervisor-logos/uruncqemu.png";
 const char *imageContainerURL = "https://s3.nbfc.io/hypervisor-logos/container.png";
 
 
@@ -114,6 +116,10 @@ const char* determineImageURL(const char *host) {
         return imageCLHURL;
     } else if (find_substring(host, "hellors") != NULL) {
         return imageRSURL;
+    } else if (find_substring(host, "hellouruncfc") != NULL) {
+        return imageURUNCFCURL;
+    } else if (find_substring(host, "hellouruncqemu") != NULL) {
+        return imageURUNCQEMUURL;
     } else {
         return imageContainerURL;  // Default image
     }
