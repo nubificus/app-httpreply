@@ -39,7 +39,6 @@
 #include <unistd.h>
 #include <errno.h>
 
-#include "images.h"
 #define LISTEN_PORT 8080
 static const char reply[] =
     "HTTP/1.1 200 OK\r\n"
@@ -54,7 +53,7 @@ static const char reply[] =
     "<style>table {border-collapse: collapse; width: 50%%;}th, td {border: 1px solid #dddddd; text-align: left; padding: 8px;}th {background-color: #f2f2f2;}</style>"
     "</head>"
     "<body>"
-    "<h1> Hello <img src=\"data:image/png;base64,%s\" alt=\"CAMAD Logo\"/></h1>"
+    "<h1> Hello <img src=\"%s\" alt=\"FOSSCOMM Logo\" height=\"100px\" /></h1>"
     "<h2> RuntimeClass</h2>"
     "<img src=\"%s\" alt=\"Runtime Class\" height=\"100px\" />"
     "<h1>Request Headers</h1>"
@@ -350,6 +349,7 @@ int main(int argc __attribute__((unused)),
 
 		const char *imageURL = determineImageURL(hostname);
 		const char *image2 = "https://s3.nbfc.io/hypervisor-logos/nubis-logo-scaled.png";
+		const char *image1 = "https://s3.nbfc.io/hypervisor-logos/fosscomm.png";
 
 		// Format the reply using snprintf
 		int reply_len = snprintf(final_reply, sizeof(final_reply), reply, image1, imageURL, headers_html, image2);
