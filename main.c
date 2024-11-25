@@ -203,7 +203,72 @@ const char* getHostFromHeaders(const char *request) {
 
     return NULL;  // Return NULL if no "Host: " header was found
 }
+static int hexval(unsigned c)
+{
+	if (c-'0'<10) return c-'0';
+	c |= 32;
+	if (c-'a'<6) return c-'a'+10;
+	return -1;
+}
 
+
+int inet_pton(int af, const char *restrict s, void *restrict a0)
+{
+    uint16_t ip[8];
+    unsigned char *a = a0;
+    int i, j, v, d, brk=-1, need_v4=0;
+
+    if (af==AF_INET) {
+        for (i=0; i<4; i++) {
+            for (v=j=0; j<3 && isdigit(s[j]); j++)
+                v = 10*v + s[j]-'0';
+            if (j==0 || (j>1 && s[0]=='0') || v>255) return 0;
+            a[i] = v;
+            if (s[j]==0 && i==3) return 1;
+            if (s[j]!='.') return 0;
+            s += j+1;
+        }
+        return 0;
+    } else if (af!=AF_INET6) {
+        errno = EAFNOSUPPORT;
+        return -1;
+    }
+
+    if (*s==':' && *++s!=':') return 0;
+
+    for (i=0; ; i++) {
+        if (s[0]==':' && brk<0) {
+            brk=i;
+            ip[i&7]=0;
+            if (!*++s) break;
+            if (i==7) return 0;
+            continue;
+        }
+        for (v=j=0; j<4 && (d=hexval(s[j]))>=0; j++)
+            v=16*v+d;
+        if (j==0) return 0;
+        ip[i&7] = v;
+        if (!s[j] && (brk>=0 || i==7)) break;
+        if (i==7) return 0;
+        if (s[j]!=':') {
+            if (s[j]!='.' || (i<6 && brk<0)) return 0;
+            need_v4=1;
+            i++;
+            break;
+        }
+        s += j+1;
+    }
+    if (brk>=0) {
+        memmove(ip+brk+7-i, ip+brk, 2*(i+1-brk));
+        for (j=0; j<7-i; j++) ip[brk+j] = 0;
+    }
+    for (j=0; j<8; j++) {
+        *a++ = ip[j]>>8;
+        *a++ = ip[j];
+    }
+    if (need_v4 && inet_pton(AF_INET, (void *)s, a-4) <= 0) return 0;
+    return 1;
+}
 
 
 
@@ -370,6 +435,75 @@ int main(int argc __attribute__((unused)),
 
 		/* Close connection */
 		close(client);
+	{
+    const char *hostname = "example.com";
+    const char *port = "80";
+    const char *path = "/";
+
+    printf("start\n");
+    int sockfd;
+    struct sockaddr_in server_addr;
+    char request[1024], response[4096];
+
+    // Create a socket
+    if ((sockfd = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
+        printf("Socket creation failed\n");
+        return 1;
+    }
+
+    // Configure server address structure
+    memset(&server_addr, 0, sizeof(server_addr));
+    server_addr.sin_family = AF_INET;
+    server_addr.sin_port = htons(atoi(port));
+
+    printf("start\n");
+    // Convert hostname to IP and set the address
+    if (inet_pton(AF_INET, "93.184.216.34", &server_addr.sin_addr) <= 0) { // example.com IP
+        printf("Invalid address/Address not supported\n");
+        return 1;
+    }
+
+    printf("start connect\n");
+    // Connect to the server
+    if (connect(sockfd, (struct sockaddr *)&server_addr, sizeof(server_addr)) < 0) {
+        printf("Connection failed\n");
+        close(sockfd);
+        return 1;
+    }
+    printf("start prepare\n");
+
+    // Prepare the HTTP GET request
+    snprintf(request, sizeof(request),
+             "GET %s HTTP/1.1\r\n"
+             "Host: %s\r\n"
+             "Connection: close\r\n"
+             "\r\n",
+             path, hostname);
+
+    printf("start\n");
+    // Send the request
+    if (send(sockfd, request, strlen(request), 0) < 0) {
+        printf("Send failed\n");
+        close(sockfd);
+        return 1;
+    }
+
+    printf("start\n");
+    // Receive the response
+    int bytes_received;
+    while ((bytes_received = recv(sockfd, response, sizeof(response) - 1, 0)) > 0) {
+        response[bytes_received] = '\0'; // Null-terminate the received data
+        printf("%s", response);         // Print the response
+    }
+
+    if (bytes_received < 0) {
+        printf("Receive failed\n");
+    }
+
+    // Close the socket
+    close(sockfd);
+
+	}
 	}
 
 out:
