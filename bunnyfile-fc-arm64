@@ -1,0 +1,14 @@
+#syntax=harbor.nbfc.io/nubificus/bunny:latest
+version: v0.1
+
+platforms:
+  framework: unikraft
+  version: 0.18.0
+  monitor: fc
+  architecture: arm64
+
+kernel:
+  from: local
+  path: workdir/build/httpreply_fc-arm64
+
+cmdline: hello
