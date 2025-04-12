@@ -4,7 +4,7 @@ version: v0.1
 platforms:
   framework: unikraft
   version: 0.18.0
-  monitor: fc
+  monitor: firecracker
   architecture: arm64
 
 kernel:
