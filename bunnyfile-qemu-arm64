@@ -9,6 +9,6 @@ platforms:
 
 kernel:
   from: local
-  path: workdir/build/httpreply_qemu-arm64
+  path: artifact/httpreply_qemu-arm64
 
 cmdline: hello

@@ -9,6 +9,6 @@ platforms:
 
 kernel:
   from: local
-  path: workdir/build/httpreply_fc-arm64
+  path: artifact/httpreply_fc-arm64
 
 cmdline: hello
