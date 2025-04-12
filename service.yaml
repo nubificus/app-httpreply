@@ -1,0 +1,14 @@
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: hellounikernelfc
+spec:
+  template:
+    spec:
+      runtimeClassName: urunc
+      containers:
+        - image: harbor.nbfc.io/nubificus/knative-example-functions/httpreply-fc:latest
+          imagePullPolicy: Always
+          env:
+            - name: RUNTIMECLASS
+              value: "generic"
