@@ -11,4 +11,4 @@ kernel:
   from: local
   path: workdir/build/httpreply_fc-arm64
 
-cmdline: "app hello"
+cmdline: app

@@ -11,4 +11,4 @@ kernel:
   from: local
   path: workdir/build/httpreply_qemu-arm64
 
-cmdline: hello
+cmdline: app
